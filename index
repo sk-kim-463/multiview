@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Youtube Multiview_9</title>
+  <style>
+    body {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin: 0;
+      padding: 0;
+    }
+    .video-wrapper {
+      width: calc(33.33% - 10px);
+      margin: 5px;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .text-box {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40%;
+      padding: 2px;
+      box-sizing: border-box;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: black;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    @media (max-width: 768px) {
+      .video-wrapper {
+        width: calc(50% - 20px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1: 한국경제TV -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/NJUjU9ALj4A?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="text-box" id="realTimeViewers1">로딩 중…</div>
+  </div>
+
+  <!-- 2: MTN -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/lb1oB2feqkQ?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="text-box" id="realTimeViewers2">로딩 중…</div>
+  </div>
+
+  <!-- 3: 연합뉴스경제 -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/yhpbioCP6nA?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="text-box" id="realTimeViewers3">로딩 중…</div>
+  </div>
+
+  <!-- 4: 매일경제TV -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/s9xL1DpBsfQ?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="text-box" id="realTimeViewers4">로딩 중…</div>
+  </div>
+
+  <!-- 5: 이데일리TV -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/5cFoz90FUMk?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="text-box" id="realTimeViewers5">로딩 중…</div>
+  </div>
+
+  <!-- 6: 토마토증권통 LIVE (채널 라이브 스트림) -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <iframe id="liveIframe6" src="" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="text-box" id="realTimeViewers6">로딩 중…</div>
+  </div>
+
+  <!-- 7: YTN (AfreecaTV) -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <iframe src="https://play.afreecatv.com/ytnlive/embed?autoPlay=true&mutePlay=true" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="text-box" id="realTimeViewers7">로딩 중…</div>
+  </div>
+
+  <!-- 8: 연합뉴스 (AfreecaTV) -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <iframe src="https://play.afreecatv.com/yonhapnews/embed?autoPlay=true&mutePlay=true" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="text-box" id="realTimeViewers8">로딩 중…</div>
+  </div>
+
+  <!-- 9: Bloomberg -->
+  <div class="video-wrapper">
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/iEpJwprxDdk?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="text-box" id="realTimeViewers9">로딩 중…</div>
+  </div>
+
+  <script>
+    const apiKey = 'AIzaSyAAlz4Qbvkh5rvr-Ffwdt1RbsaqC4HqCVw';
+    const channelId6 = 'UCgJ5pT6S2NuTVP-6-AlLZew';
+
+    const fixedVideos = [
+      ['NJUjU9ALj4A', 'realTimeViewers1', '한국경제TV'],
+      ['lb1oB2feqkQ', 'realTimeViewers2', 'MTN'],
+      ['yhpbioCP6nA', 'realTimeViewers3', '연합뉴스경제'],
+      ['s9xL1DpBsfQ', 'realTimeViewers4', '매일경제TV'],
+      ['5cFoz90FUMk', 'realTimeViewers5', '이데일리TV'],
+      ['FJfwehhzIhw', 'realTimeViewers7', 'YTN'],
+      ['6QZ_qc75ihU', 'realTimeViewers8', '연합뉴스'],
+      ['iEpJwprxDdk', 'realTimeViewers9', 'Bloomberg']
+    ];
+
+    function addCommasToNumber(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function fetchRealTimeViewers(videoId, elmId, label) {
+      fetch(`https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoId}&key=${apiKey}`)
+        .then(r => r.json())
+        .then(d => {
+          const v = d.items?.[0]?.liveStreamingDetails?.concurrentViewers;
+          const text = v != null ? `${label}: ${addCommasToNumber(v)}명` : `${label}: -명`;
+          document.getElementById(elmId).innerText = text;
+        })
+        .catch(() => {
+          document.getElementById(elmId).innerText = `${label}: waiting`;
+        });
+    }
+
+    async function getLatestLiveVideoIdForChannel(channelId) {
+      const res = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?part=id&channelId=${channelId}&type=video&eventType=live&maxResults=1&key=${apiKey}`
+      );
+      const js = await res.json();
+      return js.items?.[0]?.id?.videoId;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1~5,7~9 고정 비디오 뷰어 수 업데이트
+      fixedVideos.forEach(([vid, elm, label]) => {
+        fetchRealTimeViewers(vid, elm, label);
+        setInterval(() => fetchRealTimeViewers(vid, elm, label), 60000);
+      });
+
+      // 6번 동적 라이브 플레이 & 뷰어 수 업데이트
+      try {
+        let liveVid6 = await getLatestLiveVideoIdForChannel(channelId6);
+        if (!liveVid6) throw new Error('라이브 없음');
+        // iframe src 설정
+        const iframe6 = document.getElementById('liveIframe6');
+        iframe6.src = `https://www.youtube.com/embed/${liveVid6}?autoplay=1&mute=1`;
+        // 뷰어 수
+        fetchRealTimeViewers(liveVid6, 'realTimeViewers6', '토마토TV');
+        // 60초마다 갱신
+        setInterval(async () => {
+          liveVid6 = await getLatestLiveVideoIdForChannel(channelId6);
+          if (liveVid6) {
+            iframe6.src = `https://www.youtube.com/embed/${liveVid6}?autoplay=1&mute=1`;
+            fetchRealTimeViewers(liveVid6, 'realTimeViewers6', '토마토TV');
+          }
+        }, 60000);
+      } catch {
+        document.getElementById('realTimeViewers6').innerText = '토마토TV: —명';
+      }
+    });
+  </script>
+</body>
+</html>
