@@ -1,215 +1,52 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Youtube Multiview_9</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YouTube Live + Chat</title>
   <style>
-    body {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      margin: 0;
-      padding: 0;
-    }
-    .video-wrapper {
-      width: calc(33.33% - 10px);
-      margin: 5px;
+    :root { --gap: 10px; }
+    body { margin:0; font-family:system-ui,Segoe UI,Roboto,sans-serif; background:#0b0b0b; color:#fff; }
+    .grid {
+      display:grid;
+      grid-template-columns: 2fr 1fr;  /* 왼쪽 영상, 오른쪽 채팅 */
+      gap: var(--gap);
+      height: 100vh;
+      padding: var(--gap);
       box-sizing: border-box;
-      position: relative;
     }
-    .video-container {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-    }
-    .video-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-    .text-box {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 40%;
-      padding: 2px;
-      box-sizing: border-box;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      background-color: rgba(255, 255, 255, 0.9);
-      color: black;
-      font-weight: bold;
-      font-size: 0.9em;
-    }
-    @media (max-width: 768px) {
-      .video-wrapper {
-        width: calc(50% - 20px);
-      }
+    iframe { width:100%; height:100%; border:0; border-radius:12px; background:#000; }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; grid-auto-rows: 50vh; }
     }
   </style>
 </head>
 <body>
+  <div class="grid">
+    <!-- ▶︎ 라이브 영상 -->
+    <iframe
+      id="yt-video"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen>
+    </iframe>
 
-  <!-- 1: 한국경제TV -->
-  <div class="video-wrapper">
-    <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/NJUjU9ALj4A?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="text-box" id="realTimeViewers1">로딩 중…</div>
-  </div>
-
-  <!-- 2: MTN -->
-  <div class="video-wrapper">
-    <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/lb1oB2feqkQ?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="text-box" id="realTimeViewers2">로딩 중…</div>
-  </div>
-
-  <!-- 3: 연합뉴스경제 -->
-  <div class="video-wrapper">
-    <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/yhpbioCP6nA?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="text-box" id="realTimeViewers3">로딩 중…</div>
-  </div>
-
-  <!-- 4: 매일경제TV -->
-  <div class="video-wrapper">
-    <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/s9xL1DpBsfQ?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="text-box" id="realTimeViewers4">로딩 중…</div>
-  </div>
-
-  <!-- 5: 이데일리TV -->
-  <div class="video-wrapper">
-    <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/5cFoz90FUMk?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="text-box" id="realTimeViewers5">로딩 중…</div>
-  </div>
-
-  <!-- 6: 토마토증권통 LIVE (채널 라이브 스트림) — 2번째 라이브가 있으면 그걸 선택 -->
-  <div class="video-wrapper">
-    <div class="video-container">
-      <iframe id="liveIframe6" src="" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="text-box" id="realTimeViewers6">로딩 중…</div>
-  </div>
-
-  <!-- 7: YTN (AfreecaTV) -->
-  <div class="video-wrapper">
-    <div class="video-container">
-      <iframe src="https://play.afreecatv.com/ytnlive/embed?autoPlay=true&mutePlay=true" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="text-box" id="realTimeViewers7">로딩 중…</div>
-  </div>
-
-  <!-- 8: 연합뉴스 (AfreecaTV) -->
-  <div class="video-wrapper">
-    <div class="video-container">
-      <iframe src="https://play.afreecatv.com/yonhapnews/embed?autoPlay=true&mutePlay=true" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="text-box" id="realTimeViewers8">로딩 중…</div>
-  </div>
-
-  <!-- 9: Bloomberg -->
-  <div class="video-wrapper">
-    <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/iEpJwprxDdk?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="text-box" id="realTimeViewers9">로딩 중…</div>
+    <!-- 💬 라이브 채팅 -->
+    <iframe id="yt-chat"></iframe>
   </div>
 
   <script>
-    const apiKey = 'AIzaSyAAlz4Qbvkh5rvr-Ffwdt1RbsaqC4HqCVw';
-    const channelId6 = 'UCgJ5pT6S2NuTVP-6-AlLZew';
+    // TODO: 현재 라이브 중인 영상의 ID로 바꾸세요
+    const VIDEO_ID = "NJUjU9ALj4A"; // 예시. 실제 라이브가 아닐 수 있음
 
-    const fixedVideos = [
-      ['NJUjU9ALj4A', 'realTimeViewers1', '한국경제TV'],
-      ['lb1oB2feqkQ', 'realTimeViewers2', 'MTN'],
-      ['yhpbioCP6nA', 'realTimeViewers3', '연합뉴스경제'],
-      ['s9xL1DpBsfQ', 'realTimeViewers4', '매일경제TV'],
-      ['5cFoz90FUMk', 'realTimeViewers5', '이데일리TV'],
-      ['FJfwehhzIhw', 'realTimeViewers7', 'YTN'],
-      ['6QZ_qc75ihU', 'realTimeViewers8', '연합뉴스'],
-      ['iEpJwprxDdk', 'realTimeViewers9', 'Bloomberg']
-    ];
+    // 영상 임베드
+    const videoSrc = `https://www.youtube.com/embed/${VIDEO_ID}?rel=0&modestbranding=1&playsinline=1`;
+    document.getElementById("yt-video").src = videoSrc;
 
-    function addCommasToNumber(num) {
-      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-
-    function fetchRealTimeViewers(videoId, elmId, label) {
-      fetch(`https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoId}&key=${apiKey}`)
-        .then(r => r.json())
-        .then(d => {
-          const v = d.items?.[0]?.liveStreamingDetails?.concurrentViewers;
-          const text = v != null ? `${label}: ${addCommasToNumber(v)}명` : `${label}: -명`;
-          document.getElementById(elmId).innerText = text;
-        })
-        .catch(() => {
-          document.getElementById(elmId).innerText = `${label}: waiting`;
-        });
-    }
-
-    // n번째 라이브(기본 2번째)를 선택. n이 2일 때 두 번째가 있으면 그걸, 없으면 첫 번째로 폴백.
-    async function getLiveVideoIdForChannel(channelId, rank = 2) {
-      const maxResults = Math.max(1, rank); // 최소 1개는 받아야 함
-      const url =
-        `https://www.googleapis.com/youtube/v3/search?` +
-        `part=id&channelId=${channelId}&type=video&eventType=live&order=date&maxResults=${maxResults}&key=${apiKey}`;
-      const res = await fetch(url);
-      const js = await res.json();
-      const items = js.items || [];
-      if (!items.length) return null;
-
-      // rank번째(1-based). 부족하면 마지막(=가장 최근) 항목으로 폴백
-      const idx = Math.min(rank - 1, items.length - 1);
-      return items[idx]?.id?.videoId || null;
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      // 1~5,7~9 고정 비디오 뷰어 수 업데이트
-      fixedVideos.forEach(([vid, elm, label]) => {
-        fetchRealTimeViewers(vid, elm, label);
-        setInterval(() => fetchRealTimeViewers(vid, elm, label), 60000);
-      });
-
-      // 6번: "두 번째" 라이브를 우선 선택 (없으면 첫 번째로 폴백)
-      const iframe6 = document.getElementById('liveIframe6');
-      const label6 = '토마토TV';
-      let currentVid6 = null;
-
-      async function updateLive6() {
-        try {
-          const preferSecond = await getLiveVideoIdForChannel(channelId6, 2); // 2번째 선호
-          if (!preferSecond) {
-            // 라이브가 0개면 표시만 하고 종료
-            document.getElementById('realTimeViewers6').innerText = `${label6}: —명`;
-            return;
-          }
-          if (preferSecond !== currentVid6) {
-            currentVid6 = preferSecond;
-            iframe6.src = `https://www.youtube.com/embed/${currentVid6}?autoplay=1&mute=1`;
-          }
-          fetchRealTimeViewers(currentVid6, 'realTimeViewers6', label6);
-        } catch (e) {
-          document.getElementById('realTimeViewers6').innerText = `${label6}: —명`;
-        }
-      }
-
-      // 최초 로드 + 60초마다 갱신
-      await updateLive6();
-      setInterval(updateLive6, 60000);
-    });
+    // 채팅 임베드 (도메인 자동)
+    // GitHub Pages 프로젝트라면 hostname은 "사용자이름.github.io"
+    const domain = location.hostname; // 예: sk-kim-463.github.io
+    const chatSrc = `https://www.youtube.com/live_chat?v=${VIDEO_ID}&embed_domain=${domain}`;
+    document.getElementById("yt-chat").src = chatSrc;
   </script>
 </body>
 </html>
