@@ -1,52 +1,176 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>YouTube Live + Chat</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>3 YouTube Views + Viewers + Live Chat</title>
   <style>
-    :root { --gap: 10px; }
-    body { margin:0; font-family:system-ui,Segoe UI,Roboto,sans-serif; background:#0b0b0b; color:#fff; }
-    .grid {
-      display:grid;
-      grid-template-columns: 2fr 1fr;  /* 왼쪽 영상, 오른쪽 채팅 */
-      gap: var(--gap);
-      height: 100vh;
-      padding: var(--gap);
-      box-sizing: border-box;
+    :root {
+      --gap: 12px;
+      --chat-height: 420px;
     }
-    iframe { width:100%; height:100%; border:0; border-radius:12px; background:#000; }
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; grid-auto-rows: 50vh; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Noto Sans KR", Arial, sans-serif; background:#0b0b0b; color:#eee; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--gap);
+      padding: var(--gap);
+    }
+
+    .tile {
+      background: #141414;
+      border: 1px solid #232323;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      background: #000;
+    }
+    .video-container iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* 가운데 정렬 */
+    .meta {
+      padding: 10px 12px 6px 12px;
+      text-align: center; /* ✅ 중앙 정렬 */
+    }
+
+    .name-line {
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;         /* 줄바꿈 방지 */
+      overflow: hidden;
+      text-overflow: ellipsis;     /* 너무 길면 … */
+    }
+    .name-line .count {
+      font-weight: 700;
+      color: #b7f397;
+    }
+
+    .chat {
+      padding: 8px 12px 12px 12px;
+    }
+    .chat iframe {
+      width: 100%;
+      height: var(--chat-height);
+      border: 1px solid #232323;
+      border-radius: 8px;
+      background: #0b0b0b;
     }
   </style>
 </head>
 <body>
   <div class="grid">
-    <!-- ▶︎ 라이브 영상 -->
-    <iframe
-      id="yt-video"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowfullscreen>
-    </iframe>
+    <!-- 1 -->
+    <div class="tile">
+      <div class="video-container">
+        <iframe
+          id="video1"
+          src="https://www.youtube.com/embed/NJUjU9ALj4A?autoplay=1&mute=1&rel=0"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen
+          title="한국경제TV"
+        ></iframe>
+      </div>
+      <div class="meta">
+        <div class="name-line">한국경제TV: <span id="viewers1" class="count">0</span>명</div>
+      </div>
+      <div class="chat">
+        <iframe id="chat1" title="한국경제TV 채팅"></iframe>
+      </div>
+    </div>
 
-    <!-- 💬 라이브 채팅 -->
-    <iframe id="yt-chat"></iframe>
+    <!-- 2 -->
+    <div class="tile">
+      <div class="video-container">
+        <iframe
+          id="video2"
+          src="https://www.youtube.com/embed/lb1oB2feqkQ?autoplay=1&mute=1&rel=0"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen
+          title="MTN"
+        ></iframe>
+      </div>
+      <div class="meta">
+        <div class="name-line">MTN: <span id="viewers2" class="count">0</span>명</div>
+      </div>
+      <div class="chat">
+        <iframe id="chat2" title="MTN 채팅"></iframe>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="tile">
+      <div class="video-container">
+        <iframe
+          id="video3"
+          src="https://www.youtube.com/embed/s9xL1DpBsfQ?autoplay=1&mute=1&rel=0"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen
+          title="매일경제TV"
+        ></iframe>
+      </div>
+      <div class="meta">
+        <div class="name-line">매일경제TV: <span id="viewers3" class="count">0</span>명</div>
+      </div>
+      <div class="chat">
+        <iframe id="chat3" title="매일경제TV 채팅"></iframe>
+      </div>
+    </div>
   </div>
 
   <script>
-    // TODO: 현재 라이브 중인 영상의 ID로 바꾸세요
-    const VIDEO_ID = "NJUjU9ALj4A"; // 예시. 실제 라이브가 아닐 수 있음
+    const VIDEO_IDS = ['NJUjU9ALj4A','lb1oB2feqkQ','s9xL1DpBsfQ'];
 
-    // 영상 임베드
-    const videoSrc = `https://www.youtube.com/embed/${VIDEO_ID}?rel=0&modestbranding=1&playsinline=1`;
-    document.getElementById("yt-video").src = videoSrc;
+    document.addEventListener("DOMContentLoaded", () => {
+      const domain = location.hostname || 'localhost';
+      const chatIframes = [
+        document.getElementById('chat1'),
+        document.getElementById('chat2'),
+        document.getElementById('chat3'),
+      ];
+      VIDEO_IDS.forEach((vid, i) => {
+        chatIframes[i].src = `https://www.youtube.com/live_chat?v=${vid}&embed_domain=${domain}&dark_theme=1`;
+      });
 
-    // 채팅 임베드 (도메인 자동)
-    // GitHub Pages 프로젝트라면 hostname은 "사용자이름.github.io"
-    const domain = location.hostname; // 예: sk-kim-463.github.io
-    const chatSrc = `https://www.youtube.com/live_chat?v=${VIDEO_ID}&embed_domain=${domain}`;
-    document.getElementById("yt-chat").src = chatSrc;
+      updateViewers();
+      setInterval(updateViewers, 60000);
+    });
+
+    function updateViewers() {
+      const endpoint =
+        `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${VIDEO_IDS.join(',')}&key=AIzaSyAAlz4Qbvkh5rvr-Ffwdt1RbsaqC4HqCVw`;
+
+      fetch(endpoint)
+        .then(res => res.json())
+        .then(data => {
+          const map = {};
+          (data.items || []).forEach(item => {
+            const id = item.id;
+            const v = item?.liveStreamingDetails?.concurrentViewers || 0;
+            map[id] = Number(v);
+          });
+
+          VIDEO_IDS.forEach((vid, idx) => {
+            const n = map[vid] || 0;
+            const formatted = n.toLocaleString('ko-KR');
+            const el = document.getElementById(`viewers${idx + 1}`);
+            if (el) el.textContent = formatted;
+          });
+        })
+        .catch(err => console.error('동접자 수 조회 오류:', err));
+    }
   </script>
 </body>
 </html>
