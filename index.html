@@ -145,12 +145,12 @@
       });
 
       updateViewers();
-      setInterval(updateViewers, 60000);
+      setInterval(updateViewers, 15000);
     });
 
     function updateViewers() {
       const endpoint =
-        `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${VIDEO_IDS.join(',')}&key=AIzaSyAAlz4Qbvkh5rvr-Ffwdt1RbsaqC4HqCVw`;
+        `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${VIDEO_IDS.join(',')}&key=AIzaSyB8u0gmJgBgGM9K1W-hF_q1GpOh8uwZw3w`;
 
       fetch(endpoint)
         .then(res => res.json())
@@ -169,7 +169,7 @@
             if (el) el.textContent = formatted;
           });
         })
-        .catch(err => console.error('동접자 수 조회 오류:', err));
+        .catch(err => console.error('집계중:', err));
     }
   </script>
 </body>
