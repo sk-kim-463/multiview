@@ -340,7 +340,7 @@
       </div>
 
       <div class="graph-footer">
-        범위 이탈 시 자동 재설정 · 5초마다 업데이트
+        범위 이탈·축소 시 자동 재설정 · 5초마다 업데이트
       </div>
     </div>
 
@@ -388,6 +388,10 @@
     const UPDATE_INTERVAL = 5000;
     const HISTORY_DURATION = 60 * 60 * 1000;
     const MAX_POINTS = 180;
+
+    /* 한국경제TV Y축 설정 */
+    const Y_MARGIN = 1000;           // 현재값 기준 위아래 여유 (±1,000명)
+    const Y_SHRINK_THRESHOLD = 1000; // 축이 필요한 범위보다 이만큼 이상 넓으면 축소
 
     /* 그래프 데이터 */
     const historyData = [[], [], []];
@@ -765,55 +769,85 @@
       refreshCombinedChart();
     }
 
+    /* 백 단위 내림 / 올림 */
+    function roundDown100(v) {
+      return Math.floor(v / 100) * 100;
+    }
+
+    function roundUp100(v) {
+      return Math.ceil(v / 100) * 100;
+    }
+
     /*
       한국경제TV Y축 제어
 
-      최초 현재값 ±1,000명 설정.
-      기존 범위 안에서는 유지.
-      범위를 벗어난 경우 현재값 ±1,000으로 재설정.
+      필요한 범위 = (현재값 ±1,000)과 (최근 데이터 최소~최대) 중 더 넓은 쪽.
+                    최소값은 백 단위 내림, 최대값은 백 단위 올림.
+
+      재설정 조건
+        1) 최초 설정
+        2) 범위 이탈 : 현재값이 축 범위를 벗어남
+                       (1,000명 이상 급변해도 과거 데이터가 잘리지 않음)
+        3) 범위 축소 : 축이 필요한 범위보다 1,000명 이상 넓음
+                       (급변 구간이 그래프에서 빠지면 다시 좁혀짐)
     */
     function updateHankyungYAxis(current) {
+      const values = historyData[0].map(item => item.value);
+      const dataMin = Math.min(...values);
+      const dataMax = Math.max(...values);
+
+      const idealMin =
+        Math.max(0, roundDown100(Math.min(current - Y_MARGIN, dataMin)));
+
+      const idealMax =
+        roundUp100(Math.max(current + Y_MARGIN, dataMax));
+
+      let reason = null;
+
       if (
         hankyungYMin === null ||
         hankyungYMax === null
       ) {
-        hankyungYMin = Math.max(0, current - 1000);
-        hankyungYMax = current + 1000;
-
-        console.log(
-          '[한국경제TV Y축 최초 설정]',
-          hankyungYMin.toLocaleString('ko-KR'),
-          '~',
-          hankyungYMax.toLocaleString('ko-KR')
-        );
-
-        return;
-      }
-
-      if (
+        reason = '최초 설정';
+      } else if (
         current < hankyungYMin ||
         current > hankyungYMax
       ) {
-        const oldMin = hankyungYMin;
-        const oldMax = hankyungYMax;
-
-        hankyungYMin = Math.max(0, current - 1000);
-        hankyungYMax = current + 1000;
-
-        console.warn(
-          '[한국경제TV Y축 범위 이탈]',
-          '현재:',
-          current.toLocaleString('ko-KR'),
-          '| 이전 범위:',
-          oldMin.toLocaleString('ko-KR'),
-          '~',
-          oldMax.toLocaleString('ko-KR'),
-          '| 새 범위:',
-          hankyungYMin.toLocaleString('ko-KR'),
-          '~',
-          hankyungYMax.toLocaleString('ko-KR')
-        );
+        reason = '범위 이탈';
+      } else if (
+        (hankyungYMax - hankyungYMin) - (idealMax - idealMin) >=
+        Y_SHRINK_THRESHOLD
+      ) {
+        reason = '범위 축소';
       }
+
+      if (reason === null) {
+        return;
+      }
+
+      const oldMin = hankyungYMin;
+      const oldMax = hankyungYMax;
+
+      hankyungYMin = idealMin;
+      hankyungYMax = idealMax;
+
+      /* 눈금은 백 단위로만 표시 (8칸 내외) */
+      hankyungChart.options.scales.y.ticks.stepSize =
+        Math.max(100, roundUp100((hankyungYMax - hankyungYMin) / 8));
+
+      console.warn(
+        `[한국경제TV Y축 ${reason}]`,
+        '현재:',
+        current.toLocaleString('ko-KR'),
+        '| 이전 범위:',
+        oldMin === null ? '-' : oldMin.toLocaleString('ko-KR'),
+        '~',
+        oldMax === null ? '-' : oldMax.toLocaleString('ko-KR'),
+        '| 새 범위:',
+        hankyungYMin.toLocaleString('ko-KR'),
+        '~',
+        hankyungYMax.toLocaleString('ko-KR')
+      );
     }
 
     /* 한국경제TV 단독 그래프 */
