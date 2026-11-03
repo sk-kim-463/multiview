@@ -796,11 +796,23 @@
       const dataMin = Math.min(...values);
       const dataMax = Math.max(...values);
 
-      const idealMin =
+      const rawMin =
         Math.max(0, roundDown100(Math.min(current - Y_MARGIN, dataMin)));
 
-      const idealMax =
+      const rawMax =
         roundUp100(Math.max(current + Y_MARGIN, dataMax));
+
+      /* 눈금 간격: 백 단위 (8칸 내외) */
+      const step =
+        Math.max(100, roundUp100((rawMax - rawMin) / 8));
+
+      /*
+        축의 최소·최대를 눈금 간격의 배수로 맞춤.
+        (최대 - 최소)가 간격으로 나누어떨어지지 않으면 Chart.js가
+        범위를 균등 분할하면서 소수점 눈금이 생길 수 있음.
+      */
+      const idealMin = Math.floor(rawMin / step) * step;
+      const idealMax = Math.ceil(rawMax / step) * step;
 
       let reason = null;
 
@@ -831,9 +843,7 @@
       hankyungYMin = idealMin;
       hankyungYMax = idealMax;
 
-      /* 눈금은 백 단위로만 표시 (8칸 내외) */
-      hankyungChart.options.scales.y.ticks.stepSize =
-        Math.max(100, roundUp100((hankyungYMax - hankyungYMin) / 8));
+      hankyungChart.options.scales.y.ticks.stepSize = step;
 
       console.warn(
         `[한국경제TV Y축 ${reason}]`,
